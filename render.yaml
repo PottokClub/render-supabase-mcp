@@ -2,10 +2,34 @@ services:
   - type: web
     name: render-supabase-mcp
     env: node
-    buildCommand: npm install && npm install --save-dev @types/node @types/express && cd packages/mcp-server-supabase && npm install && npm run build && cd ../mcp-utils && npm install && npm run build && cd ../.. && npm run build
+    buildCommand: |
+      echo "🚀 Installation des dépendances principales..."
+      npm install
+      
+      echo "📦 Construction du package mcp-server-supabase..."
+      cd packages/mcp-server-supabase
+      npm install
+      npm run build
+      
+      echo "📦 Construction du package mcp-utils..."
+      cd ../mcp-utils
+      npm install
+      npm run build
+      
+      echo "🏗️ Construction du projet principal.."
+      cd ../..
+      npm run build
     startCommand: npm start
+    healthCheckPath: /health
+    autoDeploy: true
     envVars:
       - key: PORT
         value: 10000
       - key: NODE_ENV
-        value: production 
+        value: production
+      - key: SUPABASE_ACCESS_TOKEN
+        sync: false
+      - key: SUPABASE_API_URL
+        sync: false
+      - key: READ_ONLY
+        value: "true" 
