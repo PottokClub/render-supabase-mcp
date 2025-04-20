@@ -5,7 +5,7 @@
   "description": "Supabase MCP Server for Render",
   "main": "server.ts",
   "scripts": {
-    "start": "node --loader ts-node/esm server.ts",
+    "start": "node --import 'data:text/javascript,import { register } from \"node:module\"; import { pathToFileURL } from \"node:url\"; register(\"ts-node/esm\", pathToFileURL(\"./\"));' server.ts",
     "build": "tsc",
     "dev": "ts-node-dev --respawn server.ts"
   },
