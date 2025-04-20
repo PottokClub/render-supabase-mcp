@@ -2,7 +2,7 @@ services:
   - type: web
     name: render-supabase-mcp
     env: node
-    buildCommand: npm install && npm install --save-dev @types/node @types/express && npm run build
+    buildCommand: npm install && npm install --save-dev @types/node @types/express && cd packages/mcp-server-supabase && npm install && npm run build && cd ../mcp-utils && npm install && npm run build && cd ../.. && npm run build
     startCommand: npm start
     envVars:
       - key: PORT

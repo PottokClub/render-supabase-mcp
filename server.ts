@@ -1,6 +1,6 @@
 import express, { Request, Response } from 'express';
-import { createSupabaseMcpServer } from './packages/mcp-server-supabase/src/server.js';
-import { StreamTransport } from './packages/mcp-utils/src/stream-transport.js';
+import { createSupabaseMcpServer } from './packages/mcp-server-supabase/src/server';
+import { StreamTransport } from './packages/mcp-utils/src/stream-transport';
 
 const app = express();
 const port = process.env.PORT ? parseInt(process.env.PORT, 10) : 10000;
