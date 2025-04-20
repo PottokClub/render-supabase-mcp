@@ -6,18 +6,24 @@ services:
       echo "🚀 Installation des dépendances principales..."
       npm install
       
-      echo "📦 Construction du package mcp-server-supabase..."
-      cd packages/mcp-server-supabase
-      npm install
-      npm run build
-      
       echo "📦 Construction du package mcp-utils..."
-      cd ../mcp-utils
+      cd packages/mcp-utils
       npm install
       npm run build
+      npm link
+      cd ..
+      
+      echo "📦 Construction du package mcp-server-supabase..."
+      cd mcp-server-supabase
+      npm install
+      npm link @supabase/mcp-utils
+      npm run build
+      npm link
+      cd ..
       
       echo "🏗️ Construction du projet principal.."
-      cd ../..
+      cd ..
+      npm link @supabase/mcp-server-supabase @supabase/mcp-utils
       npm run build
     startCommand: npm start
     healthCheckPath: /health
