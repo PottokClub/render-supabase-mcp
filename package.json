@@ -1,12 +1,24 @@
 {
-  "workspaces": [
-    "packages/*"
-  ],
+  "name": "render-supabase-mcp",
+  "version": "1.0.0",
+  "description": "Supabase MCP Server for Render",
+  "main": "server.ts",
   "scripts": {
-    "build": "npm run build --workspace @supabase/mcp-utils --workspace @supabase/mcp-server-supabase",
-    "test": "npm run test --workspace @supabase/mcp-utils --workspace @supabase/mcp-server-supabase"
+    "start": "ts-node server.ts",
+    "build": "tsc",
+    "dev": "ts-node-dev --respawn server.ts"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^0.1.0",
+    "express": "^4.18.2",
+    "@supabase/mcp-server-supabase": "file:./packages/mcp-server-supabase",
+    "@supabase/mcp-utils": "file:./packages/mcp-utils"
   },
   "devDependencies": {
-    "supabase": "^2.1.1"
+    "@types/express": "^4.17.21",
+    "@types/node": "^20.11.19",
+    "ts-node": "^10.9.2",
+    "ts-node-dev": "^2.0.0",
+    "typescript": "^5.3.3"
   }
 }

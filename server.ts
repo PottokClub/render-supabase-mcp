@@ -1,0 +1,53 @@
+import express from 'express';
+import { createSupabaseMcpServer } from './packages/mcp-server-supabase/src/server.js';
+import { SseServerTransport } from '@modelcontextprotocol/sdk/server/sse.js';
+
+const app = express();
+const port = process.env.PORT || 3000;
+
+// Middleware pour parser le JSON
+app.use(express.json());
+
+// Endpoint SSE pour la communication MCP
+app.get('/mcp', (req, res) => {
+  // Configurer les headers SSE
+  res.setHeader('Content-Type', 'text/event-stream');
+  res.setHeader('Cache-Control', 'no-cache');
+  res.setHeader('Connection', 'keep-alive');
+  res.setHeader('Access-Control-Allow-Origin', '*');
+
+  // Créer le transport SSE
+  const transport = new SseServerTransport(req, res);
+
+  // Créer le serveur MCP
+  const server = createSupabaseMcpServer({
+    platform: {
+      accessToken: process.env.SUPABASE_ACCESS_TOKEN,
+      apiUrl: process.env.SUPABASE_API_URL,
+    },
+    readOnly: process.env.READ_ONLY === 'true',
+  });
+
+  // Connecter le serveur MCP au transport SSE
+  server.connect(transport).catch((error) => {
+    console.error('Error connecting MCP server:', error);
+    res.end();
+  });
+
+  // Gérer la déconnexion du client
+  req.on('close', () => {
+    transport.close().catch((error) => {
+      console.error('Error closing transport:', error);
+    });
+  });
+});
+
+// Endpoint de santé
+app.get('/health', (req, res) => {
+  res.json({ status: 'ok' });
+});
+
+// Démarrer le serveur
+app.listen(port, () => {
+  console.log(`MCP Server running on port ${port}`);
+}); 
