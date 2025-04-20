@@ -1,6 +1,6 @@
 import express from 'express';
 import { createSupabaseMcpServer } from './packages/mcp-server-supabase/src/server.js';
-import { SseServerTransport } from '@modelcontextprotocol/sdk/server/sse.js';
+import { StreamTransport } from './packages/mcp-utils/src/stream-transport.js';
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -16,8 +16,8 @@ app.get('/mcp', (req, res) => {
   res.setHeader('Connection', 'keep-alive');
   res.setHeader('Access-Control-Allow-Origin', '*');
 
-  // Créer le transport SSE
-  const transport = new SseServerTransport(req, res);
+  // Créer un transport personnalisé
+  const transport = new StreamTransport();
 
   // Créer le serveur MCP
   const server = createSupabaseMcpServer({
@@ -28,11 +28,26 @@ app.get('/mcp', (req, res) => {
     readOnly: process.env.READ_ONLY === 'true',
   });
 
-  // Connecter le serveur MCP au transport SSE
+  // Connecter le serveur MCP au transport
   server.connect(transport).catch((error) => {
     console.error('Error connecting MCP server:', error);
     res.end();
   });
+
+  // Gérer les messages entrants
+  req.on('data', (chunk) => {
+    try {
+      const message = JSON.parse(chunk.toString());
+      transport.send(message);
+    } catch (error) {
+      console.error('Error parsing message:', error);
+    }
+  });
+
+  // Envoyer les messages sortants
+  transport.onmessage = (message) => {
+    res.write(`data: ${JSON.stringify(message)}\n\n`);
+  };
 
   // Gérer la déconnexion du client
   req.on('close', () => {
